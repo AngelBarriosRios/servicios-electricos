@@ -1,17 +1,41 @@
-const bodyParser = require('body-parser');
 const express = require('express');
 const path = require('path');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+
+// Cargar variables de entorno
+dotenv.config();
+
+// Conectar a MongoDB (opcional - comenta si no tienes BD aún)
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/servicios-electricos')
+    .then(() => console.log('✅ Conectado a MongoDB'))
+    .catch(err => console.error('❌ Error de MongoDB:', err));
+
 const app = express();
-const port =  process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 
 // Configurar EJS
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Servir archivos estáticos
+// Middleware
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-// Ruta para la página de inicio
+// ============================================
+// IMPORTAR RUTAS (ARCHIVOS NUEVOS)
+// ============================================
+const contactRoutes = require('./routes/contactRoutes');
+
+// Usar rutas
+app.use('/', contactRoutes);
+
+// ============================================
+// RUTAS DE PÁGINAS ESTÁTICAS
+// ============================================
+
+// Inicio
 app.get('/', (req, res) => {
     res.render('index', { 
         titulo: 'Servicios Eléctricos - Inicio',
@@ -19,7 +43,7 @@ app.get('/', (req, res) => {
     });
 });
 
-// Ruta para la página de servicios
+// Servicios
 app.get('/services', (req, res) => {
     res.render('services', { 
         titulo: 'Servicios Eléctricos - Nuestros Servicios',
@@ -27,96 +51,70 @@ app.get('/services', (req, res) => {
     });
 });
 
-// Ruta para la pagina de sobre mi
-
-app.get('/about', (req,res)=>{
-    res.render('about',{
-        titulo:'Servicios electricos - sobre mi',
+// Sobre mí
+app.get('/about', (req, res) => {
+    res.render('about', {
+        titulo: 'Servicios electricos - sobre mi',
         pagina: 'about'
     });
 });
 
-// Ruta para la pagina de About
-app.get('/contact',(req, res)=>{
-    res.render('contact',{
-    titulo:'Servicios electricos - contacto',
-    pagina:'contact'
-    })
-
-});
-
-// Ruta para la pagina de politica
-app.get('/politica',(req,res)=>{
-    res.render('politica',{
-    titulo:'Servicios electricos - politica',
-    pagina:'politica' 
-    })
-})
- // Ruta para la pagina de Testimonios
-app.get('/testimonios', (req, res)=>{
-    res.render('testimonios',{
-        titulo:'Servicios electricos - Testimonios',
-        pagina:'testimonios'
+// Contacto
+app.get('/contact', (req, res) => {
+    res.render('contact', {
+        titulo: 'Servicios electricos - contacto',
+        pagina: 'contact'
     });
 });
 
-// Ruta para la pagina de  dejar testimonios
-
-app.get('/dejar-testimonios',(req,res)=>{
-    res.render('dejar-testimonio',{
-    titulo:'Servicios electrico - comparte tu testimonio',
-    pagina:'dejar-testimonios'
+// Política de privacidad
+app.get('/politica', (req, res) => {
+    res.render('politica', {
+        titulo: 'Servicios electricos - politica',
+        pagina: 'politica' 
     });
 });
-//middleware para procesar los datos de formularios
 
-app.use(bodyParser.urlencoded({extended:true}));
-app.use(bodyParser.json());
-
-// ruta para procesar el formulario de contacto
-app.post('/enviar-contacto',(req,res)=>{
-    const{nombre, email, telefono, asunto, mensaje, privacidad}= req.body;
-    
-    console.log('Datos recibidos:',{
-        nombre, 
-        email,
-        telefono,
-        asunto,
-        mensaje,
-        privacidad
-    });
-
-    res.render('contact',{
-        titulo:'Servicios electricos - Contacto',
-        pagina: 'contact',
-        mensajeExito:'!Mensaje enviado correcramente! Te contactaremos pronto'
+// Testimonios
+app.get('/testimonios', (req, res) => {
+    res.render('testimonios', {
+        titulo: 'Servicios electricos - Testimonios',
+        pagina: 'testimonios'
     });
 });
-//Redirigir about.html a /about
 
-app.get('/about.html', (req,res)=>{
-    res.redirect('/about')
-})
-// Redirigir Services.html a /services
-app.get('/Services.html', (req, res) => {
-    res.redirect('/services');
-});
-// Redirigir politicas.html a /politicas
-app.get('/politica.html',(req,res)=>{
-    res.redirect('/politica');
-});
-//Redirigir testimonios.html a /testimonios
-app.get('/testimonios.html',(req,res)=> {
-    res.redirect('/testimonios');
-});
-// redirigir dejar-testimonios.html a /dejar-testimonio
-app.get('/dejar-testimonio.html',(req, res)=>{
-    res.redirect('/dejar-testimonio');
+// Dejar testimonio (¡CORREGIDO: singular!)
+app.get('/dejar-testimonio', (req, res) => {
+    res.render('dejar-testimonio', {
+        titulo: 'Servicios electricos - comparte tu testimonio',
+        pagina: 'testimonios'
+    });
 });
 
-// Iniciar servidor
+// ============================================
+// PROCESAR FORMULARIOS (ahora van a contactRoutes)
+// ============================================
+// Estas rutas ya están en contactRoutes.js, así que las comentamos
+/*
+app.post('/enviar-contacto', ...)
+app.post('/enviar-testimonio', ...)
+*/
+
+// ============================================
+// REDIRECCIONES
+// ============================================
+app.get('/about.html', (req, res) => res.redirect('/about'));
+app.get('/Services.html', (req, res) => res.redirect('/services'));
+app.get('/politica.html', (req, res) => res.redirect('/politica'));
+app.get('/testimonios.html', (req, res) => res.redirect('/testimonios'));
+app.get('/dejar-testimonio.html', (req, res) => res.redirect('/dejar-testimonio'));
+
+// ============================================
+// INICIAR SERVIDOR
+// ============================================
 app.listen(port, () => {
     console.log(`✅ Servidor corriendo en http://localhost:${port}`);
     console.log(`📱 Página de inicio: http://localhost:${port}`);
     console.log(`🔧 Página de servicios: http://localhost:${port}/services`);
+    console.log(`📝 Dejar testimonio: http://localhost:${port}/dejar-testimonio`);
 });
