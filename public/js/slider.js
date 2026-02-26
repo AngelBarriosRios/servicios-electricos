@@ -165,7 +165,7 @@ Muestra la slide correspondiente al índice
 CON EFECTO CIRCULAR Y BARRA DE PROGRESO OPTIMIZADA
 */
 showSlide(index) {
-    const previousIndex = this.currentSlide; /
+    const previousIndex = this.currentSlide; 
     
     // Validación de índice circular
     if (index < 0) {
