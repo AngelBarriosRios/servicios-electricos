@@ -2,7 +2,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const path = require('path');
 const app = express();
-const port = 3000;
+const port =  process.env.PORT || 3000;
 
 // Configurar EJS
 app.set('view engine', 'ejs');
@@ -60,7 +60,14 @@ app.get('/testimonios', (req, res)=>{
     });
 });
 
+// Ruta para la pagina de  dejar testimonios
 
+app.get('/dejar-testimonios',(req,res)=>{
+    res.render('dejar-testimonio',{
+    titulo:'Servicios electrico - comparte tu testimonio',
+    pagina:'dejar-testimonios'
+    });
+});
 //middleware para procesar los datos de formularios
 
 app.use(bodyParser.urlencoded({extended:true}));
@@ -101,6 +108,10 @@ app.get('/politica.html',(req,res)=>{
 //Redirigir testimonios.html a /testimonios
 app.get('/testimonios.html',(req,res)=> {
     res.redirect('/testimonios');
+});
+// redirigir dejar-testimonios.html a /dejar-testimonio
+app.get('/dejar-testimonio.html',(req, res)=>{
+    res.redirect('/dejar-testimonio');
 });
 
 // Iniciar servidor
