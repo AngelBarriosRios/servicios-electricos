@@ -25,3 +25,43 @@ document.addEventListener('DOMContentLoaded', function(){
         });
     }
 });
+
+
+/* Script para animación de contadores */
+
+document.addEventListener('DOMContentLoaded', () => {
+    const counters = document.querySelectorAll('.stat-number');
+    const speed = 200;
+
+    const animateCounter = (counter) => {
+        const target = parseInt(counter.getAttribute('data-target'));
+        let count = 0;
+        
+        const updateCount = () => {
+            const increment = target / speed;
+            
+            if (count < target) {
+                count += increment;
+                counter.innerText = Math.ceil(count);
+                setTimeout(updateCount, 1);
+            } else {
+                counter.innerText = target + '+';
+            }
+        };
+        
+        updateCount();
+    };
+
+    // Intersection Observer para activar animación cuando sea visible
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateCounter(entry.target);
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    counters.forEach(counter => observer.observe(counter));
+});
+
