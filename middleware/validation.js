@@ -1,9 +1,6 @@
-// middleware/validation.js
 const { body, validationResult } = require('express-validator');
 
-
 // VALIDACIÓN PARA CONTACTO
-
 const validateContact = [
     body('nombre')
         .trim()
@@ -44,7 +41,8 @@ const validateContact = [
                 titulo: 'Contacto',
                 pagina: 'contact',
                 errores: errores,
-                datos: req.body
+                datos: req.body,
+                mensajeExito: null
             });
         }
         next();
@@ -52,7 +50,6 @@ const validateContact = [
 ];
 
 // VALIDACIÓN PARA TESTIMONIOS
-
 const validateTestimonio = [
     body('nombre')
         .trim()
@@ -93,7 +90,8 @@ const validateTestimonio = [
                 titulo: 'Dejar Testimonio',
                 pagina: 'testimonios',
                 errores: errores,
-                datos: req.body
+                datos: req.body,
+                mensajeExito: null
             });
         }
         next();

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const Contacto = require('../models/Contacto');
 const { validateContact, validateTestimonio } = require('../middleware/validation');
 const { sendContactEmail, sendTestimonioEmail } = require('../utils/emailService');
@@ -13,33 +14,45 @@ router.get('/contact', (req, res) => {
     res.render('contact', {
         titulo: 'Contacto',
         pagina: 'contact',
+        mensajeExito: null,
         errores: [],
-        datos: {},
-        mensajeExito: null
+        datos: {}
     });
 });
 
 // Procesar formulario de contacto
 router.post('/enviar-contacto', validateContact, async (req, res) => {
     try {
-        // 1. Guardar en MongoDB (DESCOMENTADO)
-        const nuevoContacto = new Contacto({
-            nombre: req.body.nombre,
-            email: req.body.email,
-            telefono: req.body.telefono,
-            asunto: req.body.asunto,
-            mensaje: req.body.mensaje,
-            privacidad: req.body.privacidad === 'on' // Convierte 'on' a true
-        });
+        console.log('📝 Datos recibidos:', req.body);
         
-        await nuevoContacto.save();
-        console.log('✅ Contacto guardado en MongoDB con ID:', nuevoContacto._id);
+        // Verificar si MongoDB está conectado
+        const dbConnected = mongoose.connection.readyState === 1;
+        
+        if (dbConnected) {
+            // Guardar en MongoDB
+            const nuevoContacto = new Contacto({
+                nombre: req.body.nombre,
+                email: req.body.email,
+                telefono: req.body.telefono,
+                asunto: req.body.asunto,
+                mensaje: req.body.mensaje,
+                privacidad: req.body.privacidad === 'on'
+            });
+            
+            await nuevoContacto.save();
+            console.log('✅ Contacto guardado en MongoDB con ID:', nuevoContacto._id);
+        } else {
+            console.log('⚠️ MongoDB no conectado, saltando guardado en BD');
+        }
 
-        // 2. Enviar email
-        await sendContactEmail(req.body);
-        console.log('✅ Email enviado correctamente');
+        // Enviar email
+        try {
+            await sendContactEmail(req.body);
+            console.log('✅ Email enviado');
+        } catch (emailError) {
+            console.log('⚠️ Email no enviado:', emailError.message);
+        }
 
-        // 3. Renderizar éxito
         res.render('contact', {
             titulo: 'Contacto',
             pagina: 'contact',
@@ -49,14 +62,14 @@ router.post('/enviar-contacto', validateContact, async (req, res) => {
         });
 
     } catch (error) {
-        console.error('❌ Error completo:', error);
+        console.error('❌ Error al procesar:', error);
         
         res.render('contact', {
             titulo: 'Contacto',
             pagina: 'contact',
+            mensajeExito: null,
             errores: ['Error al enviar el mensaje. Por favor, intenta nuevamente.'],
-            datos: req.body,
-            mensajeExito: null
+            datos: req.body
         });
     }
 });
@@ -70,18 +83,16 @@ router.get('/dejar-testimonio', (req, res) => {
     res.render('dejar-testimonio', {
         titulo: 'Dejar Testimonio',
         pagina: 'testimonios',
+        mensajeExito: null,
         errores: [],
-        datos: {},
-        mensajeExito: null
+        datos: {}
     });
 });
 
 // Procesar testimonio
 router.post('/enviar-testimonio', validateTestimonio, async (req, res) => {
     try {
-        // 1. Guardar en MongoDB (necesitas crear el modelo Testimonio)
-        // Por ahora solo enviamos email
-        
+        // Enviar email de testimonio
         await sendTestimonioEmail(req.body);
         console.log('✅ Email de testimonio enviado');
 
@@ -101,32 +112,6 @@ router.post('/enviar-testimonio', validateTestimonio, async (req, res) => {
             datos: req.body,
             mensajeExito: null
         });
-    }
-});
-
-// ============================================
-// RUTA PARA VER CONTACTOS (ADMIN)
-// ============================================
-router.get('/admin/contactos', async (req, res) => {
-    try {
-        const contactos = await Contacto.find().sort({ fecha: -1 });
-        res.render('admin/contactos', {
-            titulo: 'Mensajes Recibidos',
-            contactos: contactos
-        });
-    } catch (error) {
-        console.error('Error al obtener contactos:', error);
-        res.status(500).send('Error al cargar los mensajes');
-    }
-});
-
-// Marcar mensaje como leído
-router.put('/admin/contacto/:id/leer', async (req, res) => {
-    try {
-        await Contacto.findByIdAndUpdate(req.params.id, { leido: true });
-        res.json({ success: true });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
     }
 });
 
