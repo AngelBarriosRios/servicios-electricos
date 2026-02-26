@@ -7,10 +7,11 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 // Conectar a MongoDB (opcional - comenta si no tienes BD aún)
+/*
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/servicios-electricos')
     .then(() => console.log('✅ Conectado a MongoDB'))
     .catch(err => console.error('❌ Error de MongoDB:', err));
-
+*/
 const app = express();
 const port = process.env.PORT || 3000;
 

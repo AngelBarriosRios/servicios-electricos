@@ -1,16 +1,15 @@
 /* 
-============================================
 MÓDULO 1: CLASE PRINCIPAL DEL SLIDER
-============================================
+
 Encapsulamos toda la funcionalidad en una clase
 para mejor organización y reutilización
 */
 class HeroSlider {
     
     /* 
-    ============================================
+
     MÓDULO 2: CONSTRUCTOR
-    ============================================
+
     Inicializa las propiedades y elementos del DOM
     */
     constructor() {
@@ -141,9 +140,9 @@ class HeroSlider {
     }
     
     /* 
-    ============================================
+
     MÓDULO 7: NAVEGACIÓN POR TECLADO
-    ============================================
+
     Maneja las flechas del teclado
     */
     handleKeyboard(e) {
@@ -159,14 +158,14 @@ class HeroSlider {
     }
     
 /* 
-============================================
+
 MÓDULO 8: MOSTRAR SLIDE ESPECÍFICA - VERSIÓN OPTIMIZADA
-============================================
+
 Muestra la slide correspondiente al índice
 CON EFECTO CIRCULAR Y BARRA DE PROGRESO OPTIMIZADA
 */
 showSlide(index) {
-    const previousIndex = this.currentSlide; // CORREGIDO: previusIndex → previousIndex
+    const previousIndex = this.currentSlide; /
     
     // Validación de índice circular
     if (index < 0) {
@@ -233,9 +232,9 @@ showSlide(index) {
 }
     
     /* 
-    ============================================
+
     MÓDULO 9: NAVEGACIÓN
-    ============================================
+
     Métodos para moverse entre slides
     */
     nextSlide() {
@@ -253,9 +252,9 @@ showSlide(index) {
     }
     
     /* 
-    ============================================
+
     MÓDULO 10: EVENTO PERSONALIZADO
-    ============================================
+
     Permite que otros scripts escuchen cambios en el slider
     */
     dispatchSlideChangeEvent(index) {
@@ -269,9 +268,9 @@ showSlide(index) {
     }
     
     /* 
-    ============================================
+
     MÓDULO 11: CONTROL DE AUTOPLAY
-    ============================================
+ 
     Inicia, pausa y reanuda la reproducción automática
     */
     startAutoplay() {
@@ -310,9 +309,9 @@ showSlide(index) {
     }
     
     /* 
-    ============================================
+
     MÓDULO 12: BARRA DE PROGRESO
-    ============================================
+
     Controla la animación de la barra de progreso
     */
     startProgressBar() {
@@ -353,9 +352,9 @@ showSlide(index) {
     }
     
     /* 
-    ============================================
+
     MÓDULO 13: RESIZE HANDLER
-    ============================================
+
     Maneja cambios en el tamaño de la ventana
     */
     handleResize() {
@@ -364,9 +363,9 @@ showSlide(index) {
     }
     
     /* 
-    ============================================
+
     MÓDULO 14: MÉTODOS PÚBLICOS
-    ============================================
+
     API pública para controlar el slider desde fuera
     */
     goToFirst() {
@@ -391,9 +390,9 @@ showSlide(index) {
     }
     
     /* 
-    ============================================
+
     MÓDULO 15: DESTRUCTOR
-    ============================================
+
     Limpia recursos cuando el slider se destruye
     */
     destroy() {
@@ -408,9 +407,9 @@ showSlide(index) {
 }
 
 /* 
-============================================
+
 MÓDULO 16: INICIALIZACIÓN
-============================================
+
 Esperamos a que el DOM esté listo y creamos el slider
 */
 document.addEventListener('DOMContentLoaded', () => {
@@ -432,9 +431,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* 
-============================================
+
 MÓDULO 17: PREVENCIÓN DE MEMORY LEAKS
-============================================
+
 Limpiamos todo si la página se descarga
 */
 window.addEventListener('beforeunload', () => {
